@@ -82,7 +82,7 @@ rasterio==1.4.3
 referencing
 requests
 retrying
-rioxarray==0.18.1
+rioxarray
 rpds-py
 scipy
 shiboken6==6.8.0.2
