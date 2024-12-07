@@ -59,7 +59,7 @@ msgpack
 munkres==1.1.4
 narwhals
 nest_asyncio
-numpy==2.1.3
+numpy
 openpyxl
 packaging
 pandas==1.4.1
