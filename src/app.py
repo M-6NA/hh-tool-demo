@@ -6,6 +6,9 @@ import dash
 from dash import dcc, html, Input, Output
 import dash_leaflet as dl
 import dash_bootstrap_components as dbc
+import dash_leaflet.express as dlx
+from dash_extensions.javascript import assign
+from dash import Dash
 import rioxarray as rxr
 import numpy as np
 import pandas as pd
@@ -16,12 +19,19 @@ from rasterio.crs import CRS
 from PIL import Image
 import dask.array as da
 from flask_caching import Cache
+import json
+
 
 
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # :::::::::::::::: INITIALIZING THE DASH APP ::::::::::::::::::
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(
+    __name__, 
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_scripts=["https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"],
+    prevent_initial_callbacks=True
+)
 server = app.server  # Required for static file serving
 app.title = "Cilvēka dzīvotnes modelēšanas rīks"
 
@@ -52,11 +62,13 @@ def get_jet_colorscale(n_colors=10):
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 SELECTED_FONT_CSS = "'Poppins', sans-serif"
 VRI_LOGO_PATH = "/assets/images/VRI_logo.png"
-CESIS_KAD_GEOJSON = "/assets/geojson/Cesis_kad.geojson"
+CESIS_KAD_GEOJSON = "assets/geojson/Cesis_kad.geojson"
 CESIS_ROAD_GEOJSON = "/assets/geojson/Cesis_road4.geojson"
 STATIC_PATH = "static"
 os.makedirs(STATIC_PATH, exist_ok=True)
 COLORSCALE = get_jet_colorscale()
+CORRECT_BOUNDS = [[57.507346438, 24.77478809], [56.91368127, 26.189455607999996]]
+
 
 data_list = load_data_list('Layers/HH_layers.xlsx')
 data_keys = list(data_list.Name)
@@ -64,6 +76,23 @@ base_raster = load_raster('Layers/10301.tif')
 base_raster.data[base_raster.data >= 0] = 0
 base_raster = base_raster.astype(np.float64)
 
+with open(CESIS_KAD_GEOJSON, 'r', encoding='utf-8') as f:
+    cesis_kad_data = json.load(f)
+
+# Debugging:
+# print(cesis_kad_data["features"][0]["properties"])
+# print(cesis_kad_data) 
+
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::::::::::::::::: JS FUNCTIONS ::::::::::::::::::::::::
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+# JS Function needed for propertues Values on hover
+on_each_feature = assign("""
+function(feature, layer, context){
+    layer.bindTooltip(`KAD: ${feature.properties.KAD || 'No KAD available'} <br> ha: ${feature.properties.Hectares} <br> pag: ${feature.properties.pag}`)
+}
+""")
 
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::::::::::::::::: PAGE LAYOUT :::::::::::::::::::::::::
@@ -200,25 +229,55 @@ app.layout = dbc.Container([
                         subdomains=['mt0', 'mt1', 'mt2', 'mt3']), name="Google Satellite"),
 
                     # ::::::::::::::::::::::: RESULT LAYER AND GEOJSON FILES ::::::::::::::::::::::
-                    dl.Overlay(dl.ImageOverlay(
-                        id="raster-overlay", 
-                        url="", 
-                        bounds=[[56.0, 24.0], [58.0, 26.0]],
-                        opacity=0.5
-                    ), name="Dzīvotnes Kartējums", checked=True),
+                
+                    # dl.Overlay(dl.GeoJSON(
+                    #     url=CESIS_KAD_GEOJSON,
+                    #     id="cesis-kad-overlay",
+                    #     options={"style": {"color": "#df543a"}},
+                        
+                    # ), name="Kadastri", checked=False)
+                    
+                    dl.Overlay(
+                        dl.GeoJSON(
+                            data=cesis_kad_data, 
+                            id="cesis-kad-overlay",
+                            options={
+                                "style": {
+                                    "color": "#FEFEFA",  
+                                    "weight": 1,         
+                                }
+                            },
+                            hoverStyle={
+                                "weight": 3,  
+                                "color": "#ff0000",  
+                                "dashArray": "5,5"  
+                            },
+
+                            onEachFeature=on_each_feature,
+
+                        ),
+                        name="Kadastri",
+                        checked=False
+                    ),
 
                     dl.Overlay(dl.GeoJSON(
                         url=CESIS_ROAD_GEOJSON,
                         id="cesis-road-overlay",
-                        options={"style": {"color": "#c94079"}}
+                        options={"style": {
+                            "color": "#000000", 
+                            "weight": 2, 
+                            }
+                        },
                     ), name="Ceļi", checked=False),
 
-                    dl.Overlay(dl.GeoJSON(
-                        url=CESIS_KAD_GEOJSON,
-                        id="cesis-kad-overlay",
-                        options={"style": {"color": "#df543a"}},
-                        
-                    ), name="Kadastri", checked=False)
+                    dl.Overlay(dl.ImageOverlay(
+                        id="raster-overlay", 
+                        url="/static/default_raster.webp", 
+                        bounds=CORRECT_BOUNDS,
+                        opacity=0.5
+                    ), name="Dzīvotnes Kartējums", checked=True),
+
+                    
                 ]),
                 
             ], style={"height": "600px", "width": "100%"}, id="map"),
@@ -364,10 +423,13 @@ def update_map(pos_factors, neg_factors, transparency, data_threshold):
     else:
         description += "- Nav izvēlēts neviens"
 
+    # DEBUGGING:
+    # print(cropped_bounds)
+
     return image_url, cropped_bounds, transparency, description
 
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::::::::::::::::: APP EXECUTION :::::::::::::::::::::::
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 if __name__ == "__main__":
-    app.run_server(debug = False)
+    app.run_server(debug = True)
