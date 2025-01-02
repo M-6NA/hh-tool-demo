@@ -432,4 +432,4 @@ def update_map(pos_factors, neg_factors, transparency, data_threshold):
 # ::::::::::::::::::::::: APP EXECUTION :::::::::::::::::::::::
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 if __name__ == "__main__":
-    app.run_server(debug = True)
+    app.run_server(debug = False)
