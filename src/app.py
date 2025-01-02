@@ -311,8 +311,8 @@ app.layout = dbc.Container([
 
     # ::::::::::::::::::::::: FOOTER :::::::::::::::::::::::
     dbc.Row([
-        dbc.Col([
-            html.P(f"Copyright © {datetime.now().year} Vides risinājumu institūts"),  
+        dbc.Col([ 
+            html.P(f"Copyright © 2025 Vides risinājumu institūts"),  
         ])
     ]),
 
