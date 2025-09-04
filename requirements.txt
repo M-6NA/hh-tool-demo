@@ -14,3 +14,6 @@ numpy==2.0.2
 matplotlib==3.9.3
 pillow==11.0.0
 scipy==1.13.1
+
+dask==2024.8.0
+distributed==2024.8.0
