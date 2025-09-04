@@ -23,7 +23,7 @@ dash-core-components
 dash-extensions
 dash-table
 dash-tools
-dash-leaflet==0.1.23
+dash-leaflet==1.0.16
 dask
 dask-expr
 dataclass-wizard
