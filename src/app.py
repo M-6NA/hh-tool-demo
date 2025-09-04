@@ -26,44 +26,14 @@ import json
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # :::::::::::::::: INITIALIZING THE DASH APP ::::::::::::::::::
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# app = dash.Dash(
-#     __name__, 
-#     external_stylesheets=[dbc.themes.BOOTSTRAP],
-#     external_scripts=["https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"],
-#     prevent_initial_callbacks=True
-# )
-
-app = Dash(
+app = dash.Dash(
     __name__, 
     external_stylesheets=[dbc.themes.BOOTSTRAP],
-    external_scripts=[
-        "https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js",
-        "https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-    ],
+    external_scripts=["https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"],
     prevent_initial_callbacks=True
 )
 
-# Add this meta tag to ensure proper mobile rendering
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-    </head>
-    <body>
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}
-        </footer>
-    </body>
-</html>
-'''
+
 
 server = app.server  # Required for static file serving
 app.title = "Cilvēka dzīvotnes modelēšanas rīks"
@@ -238,85 +208,6 @@ app.layout = dbc.Container([
 
         ], width=3),
         
-         # ::::::::::::::::::::::: MAP SECTION :::::::::::::::::::::::
-        # dbc.Col([
-        #     dl.Map(center=[57.22, 25.42], zoom=9, children=[
-        #         dl.LayersControl([
-
-        #             # ::::::::::::::::::::::: COLORBAR :::::::::::::::::::::::
-        #             dl.LayerGroup(id="layer-group"),
-        #                 dl.Colorbar(
-        #                     id="colorbar",
-        #                     min=0, max=100, 
-        #                     nTicks=5, 
-        #                     colorscale=COLORSCALE,  
-        #                     position="topright",
-        #                     width=300,
-        #                     height=10,
-        #                 ),
-
-        #             # ::::::::::::::::::::::: BASE LAYERS ::::::::::::::::::::::
-        #             dl.BaseLayer(dl.TileLayer(url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"), name="OpenStreetMap", checked=True),
-        #             dl.BaseLayer(dl.TileLayer(url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
-        #                 maxZoom=20,
-        #                 subdomains=['mt0', 'mt1', 'mt2', 'mt3']), name="Google Satellite"),
-
-        #             # ::::::::::::::::::::::: RESULT LAYER AND GEOJSON FILES ::::::::::::::::::::::
-                
-        #             # dl.Overlay(dl.GeoJSON(
-        #             #     url=CESIS_KAD_GEOJSON,
-        #             #     id="cesis-kad-overlay",
-        #             #     options={"style": {"color": "#df543a"}},
-                        
-        #             # ), name="Kadastri", checked=False)
-                    
-        #             dl.Overlay(
-        #                 dl.GeoJSON(
-        #                     data=cesis_kad_data, 
-        #                     id="cesis-kad-overlay",
-        #                     options={
-        #                         "style": {
-        #                             "color": "#FEFEFA",  
-        #                             "weight": 1,         
-        #                         }
-        #                     },
-        #                     hoverStyle={
-        #                         "weight": 3,  
-        #                         "color": "#ff0000",  
-        #                         "dashArray": "5,5"  
-        #                     },
-
-        #                     onEachFeature=on_each_feature,
-
-        #                 ),
-        #                 name="Kadastri",
-        #                 checked=False
-        #             ),
-
-        #             dl.Overlay(dl.GeoJSON(
-        #                 url=CESIS_ROAD_GEOJSON,
-        #                 id="cesis-road-overlay",
-        #                 options={"style": {
-        #                     "color": "#000000", 
-        #                     "weight": 2, 
-        #                     }
-        #                 },
-        #             ), name="Ceļi", checked=False),
-
-        #             dl.Overlay(dl.ImageOverlay(
-        #                 id="raster-overlay", 
-        #                 url="/static/default_raster.webp", 
-        #                 bounds=CORRECT_BOUNDS,
-        #                 opacity=0.5
-        #             ), name="Dzīvotnes Kartējums", checked=True),
-
-                    
-        #         ]),
-                
-        #     ], style={"height": "600px", "width": "100%"}, id="map"),
-
-        # ], width=9),
-
         dbc.Col([
             dl.Map(
                 center=[57.22, 25.42],
