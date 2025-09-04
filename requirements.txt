@@ -2,6 +2,11 @@ dash==2.18.2
 dash-bootstrap-components==1.6.0
 dash-extensions==1.0.19
 dash-leaflet==1.0.15
+
+Flask==2.3.3
+Flask-Caching>=2.1.0,<3.0.0
+gunicorn
+
 rasterio==1.4.3
 rioxarray==0.15.0
 pandas==2.2.3
@@ -9,6 +14,3 @@ numpy==2.0.2
 matplotlib==3.9.3
 pillow==11.0.0
 scipy==1.13.1
-Flask==2.3.3
-Flask-Caching==2.0.2
-gunicorn
