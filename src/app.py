@@ -206,83 +206,173 @@ app.layout = dbc.Container([
         ], width=3),
         
          # ::::::::::::::::::::::: MAP SECTION :::::::::::::::::::::::
-        dbc.Col([
-            dl.Map(center=[57.22, 25.42], zoom=9, children=[
-                dl.LayersControl([
+        # dbc.Col([
+        #     dl.Map(center=[57.22, 25.42], zoom=9, children=[
+        #         dl.LayersControl([
 
-                    # ::::::::::::::::::::::: COLORBAR :::::::::::::::::::::::
-                    dl.LayerGroup(id="layer-group"),
-                        dl.Colorbar(
-                            id="colorbar",
-                            min=0, max=100, 
-                            nTicks=5, 
-                            colorscale=COLORSCALE,  
-                            position="topright",
-                            width=300,
-                            height=10,
-                        ),
+        #             # ::::::::::::::::::::::: COLORBAR :::::::::::::::::::::::
+        #             dl.LayerGroup(id="layer-group"),
+        #                 dl.Colorbar(
+        #                     id="colorbar",
+        #                     min=0, max=100, 
+        #                     nTicks=5, 
+        #                     colorscale=COLORSCALE,  
+        #                     position="topright",
+        #                     width=300,
+        #                     height=10,
+        #                 ),
 
-                    # ::::::::::::::::::::::: BASE LAYERS ::::::::::::::::::::::
-                    dl.BaseLayer(dl.TileLayer(url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"), name="OpenStreetMap", checked=True),
-                    dl.BaseLayer(dl.TileLayer(url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
-                        maxZoom=20,
-                        subdomains=['mt0', 'mt1', 'mt2', 'mt3']), name="Google Satellite"),
+        #             # ::::::::::::::::::::::: BASE LAYERS ::::::::::::::::::::::
+        #             dl.BaseLayer(dl.TileLayer(url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"), name="OpenStreetMap", checked=True),
+        #             dl.BaseLayer(dl.TileLayer(url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
+        #                 maxZoom=20,
+        #                 subdomains=['mt0', 'mt1', 'mt2', 'mt3']), name="Google Satellite"),
 
-                    # ::::::::::::::::::::::: RESULT LAYER AND GEOJSON FILES ::::::::::::::::::::::
+        #             # ::::::::::::::::::::::: RESULT LAYER AND GEOJSON FILES ::::::::::::::::::::::
                 
-                    # dl.Overlay(dl.GeoJSON(
-                    #     url=CESIS_KAD_GEOJSON,
-                    #     id="cesis-kad-overlay",
-                    #     options={"style": {"color": "#df543a"}},
+        #             # dl.Overlay(dl.GeoJSON(
+        #             #     url=CESIS_KAD_GEOJSON,
+        #             #     id="cesis-kad-overlay",
+        #             #     options={"style": {"color": "#df543a"}},
                         
-                    # ), name="Kadastri", checked=False)
+        #             # ), name="Kadastri", checked=False)
                     
-                    dl.Overlay(
-                        dl.GeoJSON(
-                            data=cesis_kad_data, 
-                            id="cesis-kad-overlay",
-                            options={
-                                "style": {
-                                    "color": "#FEFEFA",  
-                                    "weight": 1,         
-                                }
-                            },
-                            hoverStyle={
-                                "weight": 3,  
-                                "color": "#ff0000",  
-                                "dashArray": "5,5"  
-                            },
+        #             dl.Overlay(
+        #                 dl.GeoJSON(
+        #                     data=cesis_kad_data, 
+        #                     id="cesis-kad-overlay",
+        #                     options={
+        #                         "style": {
+        #                             "color": "#FEFEFA",  
+        #                             "weight": 1,         
+        #                         }
+        #                     },
+        #                     hoverStyle={
+        #                         "weight": 3,  
+        #                         "color": "#ff0000",  
+        #                         "dashArray": "5,5"  
+        #                     },
 
-                            onEachFeature=on_each_feature,
+        #                     onEachFeature=on_each_feature,
 
-                        ),
-                        name="Kadastri",
-                        checked=False
-                    ),
+        #                 ),
+        #                 name="Kadastri",
+        #                 checked=False
+        #             ),
 
-                    dl.Overlay(dl.GeoJSON(
-                        url=CESIS_ROAD_GEOJSON,
-                        id="cesis-road-overlay",
-                        options={"style": {
-                            "color": "#000000", 
-                            "weight": 2, 
-                            }
-                        },
-                    ), name="Ceļi", checked=False),
+        #             dl.Overlay(dl.GeoJSON(
+        #                 url=CESIS_ROAD_GEOJSON,
+        #                 id="cesis-road-overlay",
+        #                 options={"style": {
+        #                     "color": "#000000", 
+        #                     "weight": 2, 
+        #                     }
+        #                 },
+        #             ), name="Ceļi", checked=False),
 
-                    dl.Overlay(dl.ImageOverlay(
-                        id="raster-overlay", 
-                        url="/static/default_raster.webp", 
-                        bounds=CORRECT_BOUNDS,
-                        opacity=0.5
-                    ), name="Dzīvotnes Kartējums", checked=True),
+        #             dl.Overlay(dl.ImageOverlay(
+        #                 id="raster-overlay", 
+        #                 url="/static/default_raster.webp", 
+        #                 bounds=CORRECT_BOUNDS,
+        #                 opacity=0.5
+        #             ), name="Dzīvotnes Kartējums", checked=True),
 
                     
-                ]),
+        #         ]),
                 
-            ], style={"height": "600px", "width": "100%"}, id="map"),
+        #     ], style={"height": "600px", "width": "100%"}, id="map"),
 
+        # ], width=9),
+
+        dbc.Col([
+            dl.Map(
+                center=[57.22, 25.42],
+                zoom=9,
+                style={"height": "600px", "width": "100%"},
+                id="map",
+                children=[
+                    dl.LayersControl(
+                        children=[
+
+                            # ::::::::::::::::::::::: COLORBAR :::::::::::::::::::::::
+                            dl.LayerGroup(id="layer-group"),
+                            dl.Colorbar(
+                                id="colorbar",
+                                min=0, max=100,
+                                nTicks=5,
+                                colorscale=COLORSCALE,
+                                position="topright",
+                                width=300,
+                                height=10,
+                            ),
+
+                            # ::::::::::::::::::::::: BASE LAYERS ::::::::::::::::::::::
+                            dl.BaseLayer(
+                                dl.TileLayer(
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                ),
+                                name="OpenStreetMap",
+                                checked=True
+                            ),
+                            dl.BaseLayer(
+                                dl.TileLayer(
+                                    url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
+                                    maxZoom=20,
+                                    subdomains=['mt0', 'mt1', 'mt2', 'mt3']
+                                ),
+                                name="Google Satellite"
+                            ),
+
+                            # ::::::::::::::::::::::: RESULT LAYER AND GEOJSON FILES ::::::::::::::::::::::
+                            dl.Overlay(
+                                dl.GeoJSON(
+                                    data=cesis_kad_data,
+                                    id="cesis-kad-overlay",
+                                    options={
+                                        "style": {
+                                            "color": "#FEFEFA",
+                                            "weight": 1,
+                                        }
+                                    },
+                                    hoverStyle={
+                                        "weight": 3,
+                                        "color": "#ff0000",
+                                        "dashArray": "5,5"
+                                    },
+                                    onEachFeature=on_each_feature,
+                                ),
+                                name="Kadastri",
+                                checked=False
+                            ),
+
+                            dl.Overlay(
+                                dl.GeoJSON(
+                                    url=CESIS_ROAD_GEOJSON,
+                                    id="cesis-road-overlay",
+                                    options={"style": {"color": "#000000", "weight": 2}},
+                                ),
+                                name="Ceļi",
+                                checked=False
+                            ),
+
+                            dl.Overlay(
+                                dl.ImageOverlay(
+                                    id="raster-overlay",
+                                    url="/static/default_raster.webp",
+                                    bounds=CORRECT_BOUNDS,
+                                    opacity=0.5
+                                ),
+                                name="Dzīvotnes Kartējums",
+                                checked=True
+                            ),
+                        ]
+                    )
+                ]
+            ),
         ], width=9),
+
+
+
     ]),
 
     # ::::::::::::::::::::::: DIVIDIER :::::::::::::::::::::::
