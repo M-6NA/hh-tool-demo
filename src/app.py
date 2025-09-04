@@ -26,12 +26,45 @@ import json
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # :::::::::::::::: INITIALIZING THE DASH APP ::::::::::::::::::
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-app = dash.Dash(
+# app = dash.Dash(
+#     __name__, 
+#     external_stylesheets=[dbc.themes.BOOTSTRAP],
+#     external_scripts=["https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"],
+#     prevent_initial_callbacks=True
+# )
+
+app = Dash(
     __name__, 
     external_stylesheets=[dbc.themes.BOOTSTRAP],
-    external_scripts=["https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"],
+    external_scripts=[
+        "https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js",
+        "https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    ],
     prevent_initial_callbacks=True
 )
+
+# Add this meta tag to ensure proper mobile rendering
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
+
 server = app.server  # Required for static file serving
 app.title = "Cilvēka dzīvotnes modelēšanas rīks"
 

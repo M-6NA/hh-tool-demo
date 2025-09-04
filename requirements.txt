@@ -17,13 +17,13 @@ colorama
 contourpy
 cycler
 cytoolz
-dash
-dash_bootstrap_components
+dash>=2.0.0
+dash-bootstrap-components>=1.0.0
 dash-core-components
 dash-extensions
 dash-table
 dash-tools
-dash_leaflet
+dash-leaflet==0.1.23
 dask
 dask-expr
 dataclass-wizard
